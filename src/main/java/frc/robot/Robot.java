@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.tankDrive(m_stick.getRawAxis(1), m_stick.getRawAxis(5));
+    m_robotDrive.tankDrive(m_stick.getRawAxis(1), m_stick.getRawAxis(3));
   }
 
   /**
