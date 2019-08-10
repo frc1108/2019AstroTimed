@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.cameraserver.CameraServer;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 
 
@@ -31,7 +32,7 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private final DifferentialDrive m_robotDrive = new DifferentialDrive(new WPI_VictorSPX(20), new WPI_VictorSPX(22));
+  private final DifferentialDrive m_robotDrive = new DifferentialDrive(new WPI_VictorSPX(20), new WPI_TalonSRX(22));
   private final Joystick m_stick = new Joystick(0);
   /**
    * This function is run when the robot is first started up and should be
