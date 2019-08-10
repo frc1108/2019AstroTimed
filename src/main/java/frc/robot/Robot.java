@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private final DifferentialDrive m_robotDrive = new DifferentialDrive(new WPI_VictorSPX(20), new WPI_TalonSRX(22));
+  private final DifferentialDrive m_robotDrive = new DifferentialDrive(new WPI_TalonSRX(22), new WPI_VictorSPX(20));
   private final Joystick m_stick = new Joystick(0);
   /**
    * This function is run when the robot is first started up and should be
@@ -99,7 +99,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.tankDrive(m_stick.getRawAxis(1), m_stick.getRawAxis(3));
+    m_robotDrive.tankDrive(m_stick.getRawAxis(1)*-1, m_stick.getRawAxis(5)*-1);
   }
 
   /**
@@ -109,3 +109,4 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
   }
 }
+
