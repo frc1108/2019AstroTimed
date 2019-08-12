@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import frc.robot.Constants;
+
 
 
 
@@ -32,8 +34,10 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private final DifferentialDrive m_robotDrive = new DifferentialDrive(new WPI_TalonSRX(22), new WPI_VictorSPX(20));
-  private final Joystick m_stick = new Joystick(0);
+  private final DifferentialDrive m_robotDrive = new DifferentialDrive(new WPI_TalonSRX(Constants.LEFT_DRIVE_CONTROLLER_ID), new WPI_VictorSPX(Constants.RIGHT_DRIVE_CONTROLLER_ID));
+  private final Joystick m_stick = new Joystick(Constants.XBOX_CONTROLLER_PORT);
+  
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -99,7 +103,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.tankDrive(m_stick.getRawAxis(1)*-1, m_stick.getRawAxis(5)*-1);
+    double leftStick = -1*m_stick.getRawAxis(Constants.XBOX_LEFT_TANK_AXIS)*Constants.DRIVE_TOP_SPEED_FORWARD;
+    double rightStick = -1*m_stick.getRawAxis(Constants.XBOX_RIGHT_TANK_AXIS)*Constants.DRIVE_TOP_SPEED_FORWARD;
+    m_robotDrive.tankDrive(leftStick, rightStick);
   }
 
   /**
