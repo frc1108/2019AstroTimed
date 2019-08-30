@@ -11,12 +11,16 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.PWMSpeedController;
+import static frc.robot.Constants.*;
 
 
 
@@ -30,12 +34,35 @@ import frc.robot.Constants;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  //autonomuous boilerplate
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private final DifferentialDrive m_robotDrive = new DifferentialDrive(new WPI_TalonSRX(Constants.LEFT_DRIVE_CONTROLLER_ID), new WPI_VictorSPX(Constants.RIGHT_DRIVE_CONTROLLER_ID));
-  private final Joystick m_stick = new Joystick(Constants.XBOX_CONTROLLER_PORT);
+
+  //init drivetrain
+  WPI_TalonSRX leftFront = new WPI_TalonSRX(LEFT_FRONT_DRIVE_CONTROLLER_ID);
+  WPI_VictorSPX leftBack = new WPI_VictorSPX(LEFT_BACK_DRIVE_CONTROLLER_ID);
+  WPI_VictorSPX rightFront = new WPI_VictorSPX(RIGHT_FRONT_DRIVE_CONTROLLER_ID);
+  WPI_VictorSPX rightBack = new WPI_VictorSPX(RIGHT_BACK_DRIVE_CONTROLLER_ID);
+
+  SpeedControllerGroup leftSide = new SpeedControllerGroup(leftFront, leftBack);
+  SpeedControllerGroup rightSide = new SpeedControllerGroup(rightFront, rightBack);
+  DifferentialDrive robotDrive = new DifferentialDrive(leftSide,rightSide);
+
+  //init PWM motor controllers
+  // intake = new VictorSP(INTAKE_CAN_ID);
+
+  //init pneumatics
+  Compressor c = new Compressor(PCM_ID);
+  Solenoid gripper = new Solenoid(GRIPPER_PCM_CH);
+  Solenoid yoshi = new Solenoid(YOSHI_PCM_CH);
+  Solenoid boom = new Solenoid(BOOM_PCM_CH);
+
+
+  //init controls
+  private final Joystick m_stick = new Joystick(JOYSTICK_PORT);
   
 
   /**
@@ -48,6 +75,20 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     CameraServer.getInstance().startAutomaticCapture();
+
+    //CTRE Config
+    leftFront.configFactoryDefault(0);
+    leftFront.configOpenloopRamp(RAMP_TIME);
+    leftBack.configFactoryDefault(0);
+    leftBack.configOpenloopRamp(RAMP_TIME);
+    rightFront.configFactoryDefault(0);
+    rightFront.configOpenloopRamp(RAMP_TIME);
+    leftBack.configFactoryDefault(0);
+    leftBack.configOpenloopRamp(RAMP_TIME);
+
+    //Pneumatics
+    //c.setClosedLoopControl(true);
+    
   }
   
 
@@ -103,9 +144,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    double leftStick = -1*m_stick.getRawAxis(Constants.XBOX_LEFT_TANK_AXIS)*Constants.DRIVE_TOP_SPEED_FORWARD;
-    double rightStick = -1*m_stick.getRawAxis(Constants.XBOX_RIGHT_TANK_AXIS)*Constants.DRIVE_TOP_SPEED_FORWARD;
-    m_robotDrive.tankDrive(leftStick, rightStick);
+    double _speed = -1*m_stick.getRawAxis(SPEED_AXIS)*SPEED_MAX;
+    double _turn = m_stick.getRawAxis(TURN_AXIS)*TURN_MAX;
+    robotDrive.arcadeDrive(_speed, _turn);
+
+    //Solenoid actions
+    gripper.set(m_stick.getRawButton(1));
   }
 
   /**

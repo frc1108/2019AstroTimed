@@ -10,20 +10,33 @@
 
  public class Constants{
     //CAN IDs
-    public final static int LEFT_DRIVE_CONTROLLER_ID = 22;
-    public final static int RIGHT_DRIVE_CONTROLLER_ID = 20;
-    public final static int SPARK_MAX_NEO_ID = 2;
-    public final static int SNOW_BLOWER_CONTROLLER_ID = 5;
-
+    public final static int LEFT_FRONT_DRIVE_CONTROLLER_ID = 0;
+    public final static int LEFT_BACK_DRIVE_CONTROLLER_ID = 1;
+    public final static int RIGHT_FRONT_DRIVE_CONTROLLER_ID = 2;
+    public final static int RIGHT_BACK_DRIVE_CONTROLLER_ID = 3;
+    
     //OI Constants
-    public final static int XBOX_CONTROLLER_PORT = 0;
-    public final static int XBOX_LEFT_TANK_AXIS = 1;
-    public final static int XBOX_RIGHT_TANK_AXIS = 5;
+    public final static int JOYSTICK_PORT = 0;
+    public final static int SPEED_AXIS = 1;
+    public final static int TURN_AXIS = 4;
 
 
     //Drivetrain Characteristics
-    public final static double DRIVE_TOP_SPEED_FORWARD = 0.8;
-    public final static double DRIVE_TOP_SPEED_TURNING = 0.8;
+    public final static double RAMP_TIME = 0.2; //seconds
+    public final static double SPEED_MAX = 0.9;
+    public final static double TURN_MAX = 0.9;
+
+    //Pneumatics
+    public final static int PCM_ID = 0;
+    public final static int GRIPPER_PCM_CH = 0;
+    public final static int BOOM_PCM_CH = 1;
+    public final static int YOSHI_PCM_CH = 2;
+
+    //Intake
+    public final static int INTAKE_PWM_CH = 0; //flipped output on one motor controller
+
+
+
 
  } 
 
