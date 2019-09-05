@@ -14,6 +14,7 @@
     public final static int LEFT_BACK_DRIVE_CONTROLLER_ID = 1;
     public final static int RIGHT_FRONT_DRIVE_CONTROLLER_ID = 2;
     public final static int RIGHT_BACK_DRIVE_CONTROLLER_ID = 3;
+    public final static int ARM_MOTOR_SPARK_CONTROLLER_ID = 1;
     
     //OI Constants
     public final static int JOYSTICK_PORT = 0;
@@ -34,7 +35,8 @@
 
     //Intake
     public final static int INTAKE_PWM_CH = 0; //flipped output on one motor controller
-
+    public final static int INTAKE_BTN = 6;
+    public final static int OUTTAKE_BTN = 5;
 
 
 

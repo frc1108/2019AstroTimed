@@ -13,13 +13,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANEncoder;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.wpilibj.PWMSpeedController;
+import edu.wpi.first.wpilibj.VictorSP;
 import static frc.robot.Constants.*;
 
 
@@ -51,8 +55,12 @@ public class Robot extends TimedRobot {
   SpeedControllerGroup rightSide = new SpeedControllerGroup(rightFront, rightBack);
   DifferentialDrive robotDrive = new DifferentialDrive(leftSide,rightSide);
 
+  //init CANSpark
+  CANSparkMax m_motor = new CANSparkMax(ARM_MOTOR_SPARK_CONTROLLER_ID,MotorType.kBrushless);
+  CANEncoder encoder;
+
   //init PWM motor controllers
-  // intake = new VictorSP(INTAKE_CAN_ID);
+  PWMTalonSRX intake = new PWMTalonSRX(INTAKE_PWM_CH);
 
   //init pneumatics
   Compressor c = new Compressor(PCM_ID);
@@ -60,10 +68,13 @@ public class Robot extends TimedRobot {
   Solenoid yoshi = new Solenoid(YOSHI_PCM_CH);
   Solenoid boom = new Solenoid(BOOM_PCM_CH);
 
+  
+
 
   //init controls
   private final Joystick m_stick = new Joystick(JOYSTICK_PORT);
   
+
 
   /**
    * This function is run when the robot is first started up and should be
@@ -76,6 +87,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     CameraServer.getInstance().startAutomaticCapture();
 
+    encoder = m_motor.getEncoder();
+    m_motor.restoreFactoryDefaults();
+
     //CTRE Config
     leftFront.configFactoryDefault(0);
     leftFront.configOpenloopRamp(RAMP_TIME);
@@ -85,6 +99,7 @@ public class Robot extends TimedRobot {
     rightFront.configOpenloopRamp(RAMP_TIME);
     leftBack.configFactoryDefault(0);
     leftBack.configOpenloopRamp(RAMP_TIME);
+
 
     //Pneumatics
     //c.setClosedLoopControl(true);
@@ -147,9 +162,18 @@ public class Robot extends TimedRobot {
     double _speed = -1*m_stick.getRawAxis(SPEED_AXIS)*SPEED_MAX;
     double _turn = m_stick.getRawAxis(TURN_AXIS)*TURN_MAX;
     robotDrive.arcadeDrive(_speed, _turn);
+    
 
+    //Intake actions
+    double intakeSpeed = m_stick.getRawButton(INTAKE_BTN)?1:0;
+    double outtakeSpeed = m_stick.getRawButton(OUTTAKE_BTN)?1:0;
+    intake.set(intakeSpeed-outtakeSpeed);
     //Solenoid actions
     gripper.set(m_stick.getRawButton(1));
+
+    double motorSpeed = 0.5*(m_stick.getRawButton(2)?1:0);
+    m_motor.set(motorSpeed);
+
   }
 
   /**
