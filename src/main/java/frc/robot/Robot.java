@@ -168,8 +168,10 @@ public class Robot extends TimedRobot {
     double intakeSpeed = m_stick.getRawButton(INTAKE_BTN)?1:0;
     double outtakeSpeed = m_stick.getRawButton(OUTTAKE_BTN)?1:0;
     intake.set(intakeSpeed-outtakeSpeed);
+    
     //Solenoid actions
     gripper.set(m_stick.getRawButton(1));
+    yoshi.set(m_stick.getRawButton(3));
 
     double motorSpeed = 0.5*(m_stick.getRawButton(2)?1:0);
     m_motor.set(motorSpeed);
