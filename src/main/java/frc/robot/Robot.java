@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
   Solenoid gripper = new Solenoid(GRIPPER_PCM_CH);
   Solenoid yoshi = new Solenoid(YOSHI_PCM_CH);
   Solenoid boom = new Solenoid(BOOM_PCM_CH);
-
+  
   
 
 
@@ -165,15 +165,16 @@ public class Robot extends TimedRobot {
     
 
     //Intake actions
-    double intakeSpeed = m_stick.getRawButton(INTAKE_BTN)?1:0;
-    double outtakeSpeed = m_stick.getRawButton(OUTTAKE_BTN)?1:0;
+    double intakeSpeed = m_stick.getRawAxis(INTAKE_AXIS);
+    double outtakeSpeed = m_stick.getRawAxis(OUTTAKE_AXIS);
     intake.set(intakeSpeed-outtakeSpeed);
     
     //Solenoid actions
-    gripper.set(m_stick.getRawButton(1));
-    yoshi.set(m_stick.getRawButton(3));
+    gripper.set(m_stick.getRawButton(GRIPPER_BTN));
+    yoshi.set(m_stick.getRawButton(YOSHI_BTN));
+    boom.set(m_stick.getRawButton(BOOM_BTN)); //should be called
 
-    double motorSpeed = 0.5*(m_stick.getRawButton(2)?1:0);
+    double motorSpeed = 0.5*(m_stick.getRawAxis(ARM_AXIS));
     m_motor.set(motorSpeed);
 
   }
