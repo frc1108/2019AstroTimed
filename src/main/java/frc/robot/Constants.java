@@ -23,7 +23,7 @@
     public final static int ARM_AXIS = 5;
     public final static int YOSHI_BTN = 5;
     public final static int GRIPPER_BTN = 6;
-    public final static int BOOM_BTN = 2;
+    public final static int BOOM_BTN = 1;
     public final static int INTAKE_AXIS = 2;
     public final static int OUTTAKE_AXIS = 3;
 

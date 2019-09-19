@@ -66,6 +66,15 @@ public class Robot extends TimedRobot {
   Compressor c = new Compressor(PCM_ID);
   Solenoid gripper = new Solenoid(GRIPPER_PCM_CH);
   Solenoid yoshi = new Solenoid(YOSHI_PCM_CH);
+  boolean yoshiStatus = false;
+  boolean yoshiPrevious = false;
+  boolean yoshiCurrent = false;
+  boolean gripperStatus = false;
+  boolean gripperPrevious = false;
+  boolean gripperCurrent = false;
+  boolean boomStatus = false;
+  boolean boomPrevious = false;
+  boolean boomCurrent = false;
   Solenoid boom = new Solenoid(BOOM_PCM_CH);
   
   
@@ -170,9 +179,26 @@ public class Robot extends TimedRobot {
     intake.set(intakeSpeed-outtakeSpeed);
     
     //Solenoid actions
-    gripper.set(m_stick.getRawButton(GRIPPER_BTN));
-    yoshi.set(m_stick.getRawButton(YOSHI_BTN));
-    boom.set(m_stick.getRawButton(BOOM_BTN)); //should be called
+    gripperPrevious = gripperCurrent;
+    gripperCurrent = m_stick.getRawButton(GRIPPER_BTN);
+    if (gripperCurrent && !gripperPrevious) {
+      gripperStatus = gripperStatus ? false : true;
+    }
+    gripper.set(gripperStatus);
+
+    yoshiPrevious = yoshiCurrent;
+    yoshiCurrent = m_stick.getRawButton(YOSHI_BTN);
+    if (yoshiCurrent && !yoshiPrevious) {
+	    yoshiStatus = yoshiStatus ? false : true; 
+    }
+    yoshi.set((yoshiStatus));
+
+    boomPrevious = boomCurrent;
+    boomCurrent = m_stick.getRawButton(BOOM_BTN);
+    if (boomCurrent && !boomPrevious) {
+	    boomStatus = boomStatus ? false : true; 
+    }
+    boom.set((boomStatus));
 
     double motorSpeed = 0.5*(m_stick.getRawAxis(ARM_AXIS));
     m_motor.set(motorSpeed);
