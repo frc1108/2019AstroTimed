@@ -179,7 +179,6 @@ public class Robot extends TimedRobot {
     intake.set(intakeSpeed-outtakeSpeed);
     
     //Solenoid actions
-    //test comment
     gripperPrevious = gripperCurrent;
     gripperCurrent = m_stick.getRawButton(GRIPPER_BTN);
     if (gripperCurrent && !gripperPrevious) {
