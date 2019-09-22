@@ -25,7 +25,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.VictorSP;
 import static frc.robot.Constants.*;
-
+import edu.wpi.first.networktables.*;
 
 
 
@@ -44,6 +44,8 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  private double m_yawCmd = 0.0;
 
   //init drivetrain
   WPI_TalonSRX leftFront = new WPI_TalonSRX(LEFT_FRONT_DRIVE_CONTROLLER_ID);
@@ -68,13 +70,8 @@ public class Robot extends TimedRobot {
   Solenoid yoshi = new Solenoid(YOSHI_PCM_CH);
   Solenoid boom = new Solenoid(BOOM_PCM_CH);
 
-  
-
-
   //init controls
   private final Joystick m_stick = new Joystick(JOYSTICK_PORT);
-  
-
 
   /**
    * This function is run when the robot is first started up and should be
@@ -92,13 +89,13 @@ public class Robot extends TimedRobot {
 
     //CTRE Config
     leftFront.configFactoryDefault(0);
-    leftFront.configOpenloopRamp(RAMP_TIME);
+    //leftFront.configOpenloopRamp(RAMP_TIME);
     leftBack.configFactoryDefault(0);
-    leftBack.configOpenloopRamp(RAMP_TIME);
+    //leftBack.configOpenloopRamp(RAMP_TIME);
     rightFront.configFactoryDefault(0);
-    rightFront.configOpenloopRamp(RAMP_TIME);
+    //rightFront.configOpenloopRamp(RAMP_TIME);
     leftBack.configFactoryDefault(0);
-    leftBack.configOpenloopRamp(RAMP_TIME);
+    //leftBack.configOpenloopRamp(RAMP_TIME);
 
 
     //Pneumatics
@@ -161,18 +158,41 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     double _speed = -1*m_stick.getRawAxis(SPEED_AXIS)*SPEED_MAX;
     double _turn = m_stick.getRawAxis(TURN_AXIS)*TURN_MAX;
-    robotDrive.arcadeDrive(_speed, _turn);
+    boolean autoAlign = m_stick.getRawButton(AUTO);
     
+    updateVision();
+
+    if (autoAlign) {
+      // Turn only for initial test. 
+      // TODO Can remove 0.01 once determine positive / negative
+      robotDrive.arcadeDrive(0, m_yawCmd*0.01);
+    } else {
+      robotDrive.arcadeDrive(_speed, _turn);
+    }
 
     //Intake actions
     double intakeSpeed = m_stick.getRawButton(INTAKE_BTN)?1:0;
     double outtakeSpeed = m_stick.getRawButton(OUTTAKE_BTN)?1:0;
     intake.set(intakeSpeed-outtakeSpeed);
-    //Solenoid actions
+    // Solenoid actions
     gripper.set(m_stick.getRawButton(1));
+
 
     double motorSpeed = 0.5*(m_stick.getRawButton(2)?1:0);
     m_motor.set(motorSpeed);
+
+  }
+
+  public void updateVision() {
+    double yawError = NetworkTableInstance.getDefault().getTable("raspberrypi").getEntry("currentAngleError").getDouble(0);
+    boolean targetFound = NetworkTableInstance.getDefault().getTable("raspberrypi").getEntry("tapeDetected").getBoolean(false);
+  
+    if (targetFound == true){
+      m_yawCmd = yawError/90*TURN_MAX;
+    } else {
+      m_yawCmd = 0.0;
+    }
+
 
   }
 

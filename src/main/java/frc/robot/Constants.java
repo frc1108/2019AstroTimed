@@ -38,7 +38,8 @@
     public final static int INTAKE_BTN = 6;
     public final static int OUTTAKE_BTN = 5;
 
-
+   // Misc
+   public final static int AUTO = 4; // Think this is Y button on xbox controller
 
  } 
 
