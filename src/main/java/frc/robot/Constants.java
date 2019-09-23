@@ -39,7 +39,7 @@
     public final static int OUTTAKE_BTN = 5;
 
    // Misc
-   public final static int AUTO = 4; // Think this is Y button on xbox controller
+   public final static int AUTO = 4; // TODO Think this is Y button on xbox controller
 
  } 
 
