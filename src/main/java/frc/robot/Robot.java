@@ -169,8 +169,10 @@ public class Robot extends TimedRobot {
     double outtakeSpeed = m_stick.getRawButton(OUTTAKE_BTN)?1:0;
     intake.set(intakeSpeed-outtakeSpeed);
     //Solenoid actions
+    // TODO Create constant name for this button
     gripper.set(m_stick.getRawButton(1));
 
+    // TODO Create constant name for this button
     double motorSpeed = 0.5*(m_stick.getRawButton(2)?1:0);
     m_motor.set(motorSpeed);
 
