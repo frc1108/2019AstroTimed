@@ -184,8 +184,8 @@ public class Robot extends TimedRobot {
   }
 
   public void updateVision() {
-    double yawError = NetworkTableInstance.getDefault().getTable("raspberrypi").getEntry("currentAngleError").getDouble(0);
-    boolean targetFound = NetworkTableInstance.getDefault().getTable("raspberrypi").getEntry("tapeDetected").getBoolean(false);
+    double yawError = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("currentAngleError").getDouble(0);
+    boolean targetFound = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry("tapeDetected").getBoolean(false);
   
     if (targetFound == true){
       m_yawCmd = yawError/90*TURN_MAX;
