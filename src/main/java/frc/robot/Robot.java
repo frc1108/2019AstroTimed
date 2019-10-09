@@ -23,7 +23,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANEncoder;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.wpilibj.VictorSP;
 import static frc.robot.Constants.*;
 
 
@@ -66,8 +65,17 @@ public class Robot extends TimedRobot {
   Compressor c = new Compressor(PCM_ID);
   Solenoid gripper = new Solenoid(GRIPPER_PCM_CH);
   Solenoid yoshi = new Solenoid(YOSHI_PCM_CH);
+  boolean yoshiStatus = false;
+  boolean yoshiPrevious = false;
+  boolean yoshiCurrent = false;
+  boolean gripperStatus = false;
+  boolean gripperPrevious = false;
+  boolean gripperCurrent = false;
+  boolean boomStatus = false;
+  boolean boomPrevious = false;
+  boolean boomCurrent = false;
   Solenoid boom = new Solenoid(BOOM_PCM_CH);
-
+  
   
 
 
@@ -165,15 +173,34 @@ public class Robot extends TimedRobot {
     
 
     //Intake actions
-    double intakeSpeed = m_stick.getRawButton(INTAKE_BTN)?1:0;
-    double outtakeSpeed = m_stick.getRawButton(OUTTAKE_BTN)?1:0;
+    double intakeSpeed = m_stick.getRawAxis(INTAKE_AXIS);
+    double outtakeSpeed = m_stick.getRawAxis(OUTTAKE_AXIS);
     intake.set(intakeSpeed-outtakeSpeed);
+    
     //Solenoid actions
-    // TODO Create constant name for this button
-    gripper.set(m_stick.getRawButton(1));
-
-    // TODO Create constant name for this button
-    double motorSpeed = 0.5*(m_stick.getRawButton(2)?1:0);
+    //gripper toggle
+    gripperPrevious = gripperCurrent;
+    gripperCurrent = m_stick.getRawButton(GRIPPER_BTN);
+    if (gripperCurrent && !gripperPrevious) {
+      gripperStatus = gripperStatus ? false : true;
+    }
+    gripper.set(gripperStatus);
+    //yoshi toggle
+    yoshiPrevious = yoshiCurrent;
+    yoshiCurrent = m_stick.getRawButton(YOSHI_BTN);
+    if (yoshiCurrent && !yoshiPrevious) {
+	    yoshiStatus = yoshiStatus ? false : true; 
+    }
+    yoshi.set((yoshiStatus));
+    //boom toggle
+    boomPrevious = boomCurrent;
+    boomCurrent = m_stick.getRawButton(BOOM_BTN);
+    if (boomCurrent && !boomPrevious) {
+	    boomStatus = boomStatus ? false : true; 
+    }
+    boom.set((boomStatus));
+    //arm movement
+    double motorSpeed = 0.5*(m_stick.getRawAxis(ARM_AXIS));
     m_motor.set(motorSpeed);
 
   }
