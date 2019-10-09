@@ -178,28 +178,28 @@ public class Robot extends TimedRobot {
     intake.set(intakeSpeed-outtakeSpeed);
     
     //Solenoid actions
-    //test comment
+    //gripper toggle
     gripperPrevious = gripperCurrent;
     gripperCurrent = m_stick.getRawButton(GRIPPER_BTN);
     if (gripperCurrent && !gripperPrevious) {
       gripperStatus = gripperStatus ? false : true;
     }
     gripper.set(gripperStatus);
-
+    //yoshi toggle
     yoshiPrevious = yoshiCurrent;
     yoshiCurrent = m_stick.getRawButton(YOSHI_BTN);
     if (yoshiCurrent && !yoshiPrevious) {
 	    yoshiStatus = yoshiStatus ? false : true; 
     }
     yoshi.set((yoshiStatus));
-
+    //boom toggle
     boomPrevious = boomCurrent;
     boomCurrent = m_stick.getRawButton(BOOM_BTN);
     if (boomCurrent && !boomPrevious) {
 	    boomStatus = boomStatus ? false : true; 
     }
     boom.set((boomStatus));
-
+    //arm movement
     double motorSpeed = 0.5*(m_stick.getRawAxis(ARM_AXIS));
     m_motor.set(motorSpeed);
 
