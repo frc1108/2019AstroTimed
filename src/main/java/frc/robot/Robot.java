@@ -182,21 +182,21 @@ public class Robot extends TimedRobot {
     gripperPrevious = gripperCurrent;
     gripperCurrent = m_stick.getRawButton(GRIPPER_BTN);
     if (gripperCurrent && !gripperPrevious) {
-      gripperStatus = gripperStatus ? false : true;
+      gripperStatus = !gripperStatus;
     }
     gripper.set(gripperStatus);
     //yoshi toggle
     yoshiPrevious = yoshiCurrent;
     yoshiCurrent = m_stick.getRawButton(YOSHI_BTN);
     if (yoshiCurrent && !yoshiPrevious) {
-	    yoshiStatus = yoshiStatus ? false : true; 
+	    yoshiStatus = !yoshiStatus; 
     }
     yoshi.set((yoshiStatus));
     //boom toggle
     boomPrevious = boomCurrent;
     boomCurrent = m_stick.getRawButton(BOOM_BTN);
     if (boomCurrent && !boomPrevious) {
-	    boomStatus = boomStatus ? false : true; 
+	    boomStatus = !boomStatus; 
     }
     boom.set((boomStatus));
     //arm movement
