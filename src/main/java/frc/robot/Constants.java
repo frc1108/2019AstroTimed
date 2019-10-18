@@ -29,8 +29,8 @@
 
     //Drivetrain Characteristics
     public final static double RAMP_TIME = 0.2; //seconds
-    public final static double SPEED_MAX = 0.9;
-    public final static double TURN_MAX = 0.9;
+    public final static double SPEED_MAX = 0.8;
+    public final static double TURN_MAX = 0.75;
 
     //Pneumatics
     public final static int PCM_ID = 0;
@@ -42,6 +42,7 @@
 
     //Intake
     public final static int INTAKE_PWM_CH = 0; //flipped output on one motor controller
+    public final static int INTAKE_DIO_CH = 9; //Optical sensor for loading
 
 
 
