@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
   private CANSparkMax m_motor = new CANSparkMax(ARM_MOTOR_SPARK_CONTROLLER_ID,MotorType.kBrushless);
   private CANEncoder m_encoder;
   private CANPIDController m_pidController;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kZeroPosition, maxVel, minVel, maxAcc, allowedErr, setPoint;
 
   //init Intake
   private DigitalInput m_intakeLoaded = new DigitalInput(INTAKE_DIO_CH);
@@ -124,7 +124,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    armMotionUpdate();
+    
 
 
     double _speed = -1*m_stick.getRawAxis(SPEED_AXIS)*SPEED_MAX;
@@ -155,8 +155,12 @@ public class Robot extends TimedRobot {
     }
     
     //arm movement
-    double motorSpeed = 0.4*(m_stick.getRawAxis(ARM_AXIS));
+    setPoint = (m_stick.getRawAxis(ARM_AXIS)>0.5)?15.0:5.0;
+
+    
+    //double motorSpeed = 0.4*(m_stick.getRawAxis(ARM_AXIS));
     //m_motor.set(motorSpeed);
+    armMotionUpdate();
 
   }
 
@@ -197,13 +201,15 @@ public class Robot extends TimedRobot {
     m_encoder = m_motor.getEncoder();
 
     // PID coefficients
-    kP = 5e-5; 
-    kI = 1e-6;
-    kD = 0; 
+    kP = 0.000125; 
+    kI = 0;
+    kD = 0.0000625; 
     kIz = 0; 
-    kFF = 0.000156; 
+    kFF = 0.0015; 
     kMaxOutput = 1; 
     kMinOutput = -1;
+    kZeroPosition = 0;
+    allowedErr = 0.001;
     maxRPM = 5700;
 
     // Smart Motion Coefficients
@@ -217,7 +223,7 @@ public class Robot extends TimedRobot {
     m_pidController.setIZone(kIz);
     m_pidController.setFF(kFF);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
-    m_encoder.setPosition(0);
+    m_encoder.setPosition(kZeroPosition);
     
 
     /**
@@ -237,54 +243,9 @@ public class Robot extends TimedRobot {
     m_pidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
     m_pidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
     m_pidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
-
-    // display PID coefficients on SmartDashboard
-    SmartDashboard.putNumber("P Gain", kP);
-    SmartDashboard.putNumber("I Gain", kI);
-    SmartDashboard.putNumber("D Gain", kD);
-    SmartDashboard.putNumber("I Zone", kIz);
-    SmartDashboard.putNumber("Feed Forward", kFF);
-    SmartDashboard.putNumber("Max Output", kMaxOutput);
-    SmartDashboard.putNumber("Min Output", kMinOutput);
-
-    // display Smart Motion coefficients
-    SmartDashboard.putNumber("Max Velocity", maxVel);
-    SmartDashboard.putNumber("Min Velocity", minVel);
-    SmartDashboard.putNumber("Max Acceleration", maxAcc);
-    SmartDashboard.putNumber("Allowed Closed Loop Error", allowedErr);
-    SmartDashboard.putNumber("Set Position", 0);
   }
 
   private void armMotionUpdate(){
-     // read PID coefficients from SmartDashboard
-     double p = SmartDashboard.getNumber("P Gain", 0);
-     double i = SmartDashboard.getNumber("I Gain", 0);
-     double d = SmartDashboard.getNumber("D Gain", 0);
-     double iz = SmartDashboard.getNumber("I Zone", 0);
-     double ff = SmartDashboard.getNumber("Feed Forward", 0);
-     double max = SmartDashboard.getNumber("Max Output", 0);
-     double min = SmartDashboard.getNumber("Min Output", 0);
-     double maxV = SmartDashboard.getNumber("Max Velocity", 0);
-     double minV = SmartDashboard.getNumber("Min Velocity", 0);
-     double maxA = SmartDashboard.getNumber("Max Acceleration", 0);
-     double allE = SmartDashboard.getNumber("Allowed Closed Loop Error", 0);
- 
-     // if PID coefficients on SmartDashboard have changed, write new values to controller
-     if((p != kP)) { m_pidController.setP(p); kP = p; }
-     if((i != kI)) { m_pidController.setI(i); kI = i; }
-     if((d != kD)) { m_pidController.setD(d); kD = d; }
-     if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
-     if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
-     if((max != kMaxOutput) || (min != kMinOutput)) { 
-       m_pidController.setOutputRange(min, max); 
-       kMinOutput = min; kMaxOutput = max; 
-     }
-     if((maxV != maxVel)) { m_pidController.setSmartMotionMaxVelocity(maxV,0); maxVel = maxV; }
-     if((minV != minVel)) { m_pidController.setSmartMotionMinOutputVelocity(minV,0); minVel = minV; }
-     if((maxA != maxAcc)) { m_pidController.setSmartMotionMaxAccel(maxA,0); maxAcc = maxA; }
-     if((allE != allowedErr)) { m_pidController.setSmartMotionAllowedClosedLoopError(allE,0); allowedErr = allE; }
- 
-     double setPoint = SmartDashboard.getNumber("Set Position", 0);
      /**
       * As with other PID modes, Smart Motion is set by calling the
       * setReference method on an existing pid object and setting
@@ -292,8 +253,6 @@ public class Robot extends TimedRobot {
       */
      m_pidController.setReference(setPoint, ControlType.kSmartMotion);
          
-     SmartDashboard.putNumber("Process Variable", m_encoder.getPosition());
-     SmartDashboard.putNumber("Output", m_motor.getAppliedOutput());
  
   }
 

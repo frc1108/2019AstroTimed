@@ -29,20 +29,20 @@
 
     //Drivetrain Characteristics
     public final static double RAMP_TIME = 0.2; //seconds
-    public final static double SPEED_MAX = 0.8;
+    public final static double SPEED_MAX = 0.9;
     public final static double TURN_MAX = 0.75;
 
     //Pneumatics
     public final static int PCM_ID = 0;
     public final static int GRIPPER_PCM_CH = 0;
-    public final static int BOOM_PCM_CH = 2;
-    public final static int YOSHI_PCM_CH = 1;
+    public final static int BOOM_PCM_CH = 5; //temporary change to front normally 2
+    public final static int YOSHI_PCM_CH = 4; //temporary change to back normally 1
     
     
 
     //Intake
     public final static int INTAKE_PWM_CH = 0; //flipped output on one motor controller
-    public final static int INTAKE_DIO_CH = 9; //Optical sensor for loading
+    public final static int INTAKE_DIO_CH = 0; //flipped output on one motor controller
 
 
 
