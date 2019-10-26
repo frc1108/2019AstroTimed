@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 
 //ctre imports
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -52,6 +53,7 @@ public class Robot extends TimedRobot {
   private SpeedControllerGroup leftSide = new SpeedControllerGroup(leftFront, leftBack);
   private SpeedControllerGroup rightSide = new SpeedControllerGroup(rightFront, rightBack);
   private DifferentialDrive robotDrive = new DifferentialDrive(leftSide,rightSide);
+  public boolean isInvertedDrive = false;
 
   //init Arm SparkMAX
   private CANSparkMax m_motor = new CANSparkMax(ARM_MOTOR_SPARK_CONTROLLER_ID,MotorType.kBrushless);
@@ -62,6 +64,9 @@ public class Robot extends TimedRobot {
   //init Intake
   private DigitalInput m_intakeLoaded = new DigitalInput(INTAKE_DIO_CH);
   private PWMTalonSRX intake = new PWMTalonSRX(INTAKE_PWM_CH);
+  private Timer t = new Timer();
+  public boolean isOutakePressed = false;
+  public boolean isOutakeReleased = false;
 
   //init pneumatics
   private Compressor c = new Compressor(PCM_ID);
@@ -80,7 +85,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     driveConfig();
-    armMotionConfig();  
+    armMotionConfig();
+    t.start();
+      
   }
   
   /**
@@ -126,9 +133,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     
 
+    if(m_stick.getRawButtonPressed(INVERT_BTN)){
+      isInvertedDrive = !isInvertedDrive;
+    }
 
-    double _speed = -1*m_stick.getRawAxis(SPEED_AXIS)*SPEED_MAX;
-    double _turn = m_stick.getRawAxis(TURN_AXIS)*TURN_MAX;
+    double _speed = -1*(isInvertedDrive?1:-1)*m_stick.getRawAxis(SPEED_AXIS)*SPEED_MAX;
+    double _turn = (isInvertedDrive?1:-1)*m_stick.getRawAxis(TURN_AXIS)*TURN_MAX;
     robotDrive.arcadeDrive(_speed, _turn);
     
 
@@ -138,8 +148,15 @@ public class Robot extends TimedRobot {
 
     //Intake actions
     double intakeSpeed = !m_intakeLoaded.get()?0:m_stick.getRawAxis(INTAKE_AXIS);
+    isOutakePressed = m_stick.getRawAxis(OUTTAKE_AXIS)>0.2;
+    if (isOutakePressed) {
+
+    }
+    isOutakeReleased = !isOutakePressed;
     double outtakeSpeed = m_stick.getRawAxis(OUTTAKE_AXIS);
     intake.set(intakeSpeed-outtakeSpeed);
+
+
     
     //Solenoid actions
     //gripper release cargo when pressed
