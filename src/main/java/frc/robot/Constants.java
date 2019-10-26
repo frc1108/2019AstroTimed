@@ -18,7 +18,7 @@
     
     //OI Joysticks
     public final static int JOYSTICK_PORT = 0;
-    //public final static int OPERATOR_PORT = 1;
+    public final static int OPERATOR_PORT = 1;
 
     //Driver Axis
     public final static int TURN_AXIS = 0;    //left horizontal
@@ -53,6 +53,10 @@
     //Intake
     public final static int INTAKE_PWM_CH = 0; //flipped output on one motor controller
     public final static int INTAKE_DIO_CH = 0; //flipped output on one motor controller
+
+    //Climber
+    public final static int CLIMB_PWM_CH = 1; //flipped output on one motor controller
+
 
 
 

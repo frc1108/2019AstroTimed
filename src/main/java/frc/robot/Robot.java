@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -68,14 +69,21 @@ public class Robot extends TimedRobot {
   public boolean isOutakePressed = false;
   public boolean isOutakeReleased = false;
 
+  //init level 2
+  private Spark levelClimber = new Spark(CLIMB_PWM_CH);
+
   //init pneumatics
   private Compressor c = new Compressor(PCM_ID);
   private Solenoid gripper = new Solenoid(GRIPPER_PCM_CH);
   private Solenoid yoshi = new Solenoid(YOSHI_PCM_CH);
   private Solenoid boom = new Solenoid(BOOM_PCM_CH);
+  private Solenoid front = new Solenoid(FRONT_PCM_CH);
+  private Solenoid back = new Solenoid(BACK_PCM_CH);
+
   
   //init controls
   private Joystick m_stick = new Joystick(JOYSTICK_PORT);
+  private Joystick m_operator = new Joystick(OPERATOR_PORT);
 
 
   /**
@@ -169,6 +177,17 @@ public class Robot extends TimedRobot {
     //boom toggle
     if(m_stick.getRawButtonPressed(BOOM_BTN)){
       boom.set(!boom.get());
+    }
+
+    //climb
+    if(m_operator.getRawButtonPressed(YOSHI_BTN)){
+      front.set(!front.get());
+      levelClimber.set((levelClimber.get()>0.5)?0:1);
+    }
+    if(m_operator.getRawButtonPressed(YOSHI_BTN)){
+      front.set(false);
+      levelClimber.set(0);
+      back.set(!back.get());
     }
     
     //arm movement
