@@ -36,9 +36,9 @@
     public final static int ARM_MODE_BTN = 10;
 
     //Drivetrain Characteristics
-    public final static double RAMP_TIME = 0.2; //seconds
-    public final static double SPEED_MAX = 0.9;
-    public final static double TURN_MAX = 0.75;
+    public final static double RAMP_TIME = 0.15; //seconds
+    public final static double SPEED_MAX = 1;
+    public final static double TURN_MAX = 1;
     
 
     //PCM IDs

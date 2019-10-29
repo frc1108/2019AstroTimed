@@ -34,6 +34,7 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.ControlType;
 
 //other imports
+import edu.wpi.first.cameraserver.CameraServer;
 import static frc.robot.Constants.*;
 
 /**
@@ -57,7 +58,7 @@ public class Robot extends TimedRobot {
   public boolean isInvertedDrive = false;
 
   //init Arm SparkMAX
-  private CANSparkMax m_armMotor = new CANSparkMax(ARm_armMotor_SPARK_CONTROLLER_ID,MotorType.kBrushless);
+  private CANSparkMax m_armMotor = new CANSparkMax(ARM_MOTOR_SPARK_CONTROLLER_ID,MotorType.kBrushless);
   private CANEncoder m_encoder;
   private CANPIDController m_pidController;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kZeroPosition, maxVel, minVel, maxAcc, allowedErr, setPoint;
@@ -95,6 +96,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     driveConfig();
     armMotionConfig();
+    CameraServer.getInstance().startAutomaticCapture();
     t.start();
       
   }
@@ -145,9 +147,9 @@ public class Robot extends TimedRobot {
     if(m_driver.getRawButtonPressed(INVERT_BTN)){
       isInvertedDrive = !isInvertedDrive;
     }
-
-    double _speed = -1*(isInvertedDrive?1:-1)*m_driver.getRawAxis(SPEED_AXIS)*SPEED_MAX;
-    double _turn = (isInvertedDrive?1:-1)*m_driver.getRawAxis(TURN_AXIS)*TURN_MAX;
+    SmartDashboard.putBoolean("Drive Inverted", isInvertedDrive);
+    double _speed = (isInvertedDrive?1:-1)*m_driver.getRawAxis(SPEED_AXIS)*SPEED_MAX;
+    double _turn = m_driver.getRawAxis(TURN_AXIS)*TURN_MAX;
     robotDrive.arcadeDrive(_speed, _turn);
     
 
@@ -167,7 +169,6 @@ public class Robot extends TimedRobot {
 
 
     
-    //Solenoid actions
     //gripper release cargo when pressed
     gripper.set(m_driver.getRawButton(GRIPPER_BTN));
     //yoshi toggle
@@ -180,7 +181,7 @@ public class Robot extends TimedRobot {
       boom.set(!boom.get());
     }
 
-    //climb
+    /* 
     if(m_operator.getRawButtonPressed(YOSHI_BTN)){
       front.set(!front.get());
       levelClimber.set((levelClimber.get()>0.5)?0:1);
@@ -189,24 +190,21 @@ public class Robot extends TimedRobot {
       front.set(false);
       levelClimber.set(0);
       back.set(!back.get());
-    }
+    } */
     
     //arm movement
     if(m_driver.getRawButtonPressed(ARM_MODE_BTN)){
       isArmEnabled = !isArmEnabled;
     }
+    SmartDashboard.putBoolean("Arm Level Mode", isArmEnabled);
     if (isArmEnabled){
       setPoint = (m_driver.getRawAxis(ARM_AXIS)>0.5)?15.0:5.0;
+      armMotionUpdate();
     } else {
       double motorSpeed = 0.5*(m_driver.getRawAxis(ARM_AXIS));
       m_armMotor.set(motorSpeed);
     }
     
-
-    
-    //double motorSpeed = 0.4*(m_driver.getRawAxis(ARM_AXIS));
-    //m_armMotor.set(motorSpeed);
-    armMotionUpdate();
 
   }
 
