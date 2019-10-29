@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -57,10 +57,11 @@ public class Robot extends TimedRobot {
   public boolean isInvertedDrive = false;
 
   //init Arm SparkMAX
-  private CANSparkMax m_motor = new CANSparkMax(ARM_MOTOR_SPARK_CONTROLLER_ID,MotorType.kBrushless);
+  private CANSparkMax m_armMotor = new CANSparkMax(ARm_armMotor_SPARK_CONTROLLER_ID,MotorType.kBrushless);
   private CANEncoder m_encoder;
   private CANPIDController m_pidController;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kZeroPosition, maxVel, minVel, maxAcc, allowedErr, setPoint;
+  public boolean isArmEnabled = false;
 
   //init Intake
   private DigitalInput m_intakeLoaded = new DigitalInput(INTAKE_DIO_CH);
@@ -82,7 +83,7 @@ public class Robot extends TimedRobot {
 
   
   //init controls
-  private Joystick m_stick = new Joystick(JOYSTICK_PORT);
+  private Joystick m_driver = new Joystick(JOYSTICK_PORT);
   private Joystick m_operator = new Joystick(OPERATOR_PORT);
 
 
@@ -141,12 +142,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     
 
-    if(m_stick.getRawButtonPressed(INVERT_BTN)){
+    if(m_driver.getRawButtonPressed(INVERT_BTN)){
       isInvertedDrive = !isInvertedDrive;
     }
 
-    double _speed = -1*(isInvertedDrive?1:-1)*m_stick.getRawAxis(SPEED_AXIS)*SPEED_MAX;
-    double _turn = (isInvertedDrive?1:-1)*m_stick.getRawAxis(TURN_AXIS)*TURN_MAX;
+    double _speed = -1*(isInvertedDrive?1:-1)*m_driver.getRawAxis(SPEED_AXIS)*SPEED_MAX;
+    double _turn = (isInvertedDrive?1:-1)*m_driver.getRawAxis(TURN_AXIS)*TURN_MAX;
     robotDrive.arcadeDrive(_speed, _turn);
     
 
@@ -155,27 +156,27 @@ public class Robot extends TimedRobot {
 
 
     //Intake actions
-    double intakeSpeed = !m_intakeLoaded.get()?0:m_stick.getRawAxis(INTAKE_AXIS);
-    isOutakePressed = m_stick.getRawAxis(OUTTAKE_AXIS)>0.2;
+    double intakeSpeed = !m_intakeLoaded.get()?0:m_driver.getRawAxis(INTAKE_AXIS);
+    isOutakePressed = m_driver.getRawAxis(OUTTAKE_AXIS)>0.2;
     if (isOutakePressed) {
 
     }
     isOutakeReleased = !isOutakePressed;
-    double outtakeSpeed = m_stick.getRawAxis(OUTTAKE_AXIS);
+    double outtakeSpeed = m_driver.getRawAxis(OUTTAKE_AXIS);
     intake.set(intakeSpeed-outtakeSpeed);
 
 
     
     //Solenoid actions
     //gripper release cargo when pressed
-    gripper.set(m_stick.getRawButton(GRIPPER_BTN));
+    gripper.set(m_driver.getRawButton(GRIPPER_BTN));
     //yoshi toggle
-    if(m_stick.getRawButtonPressed(YOSHI_BTN)){
+    if(m_driver.getRawButtonPressed(YOSHI_BTN)){
       yoshi.set(!yoshi.get());
     }
     
     //boom toggle
-    if(m_stick.getRawButtonPressed(BOOM_BTN)){
+    if(m_driver.getRawButtonPressed(BOOM_BTN)){
       boom.set(!boom.get());
     }
 
@@ -191,11 +192,20 @@ public class Robot extends TimedRobot {
     }
     
     //arm movement
-    setPoint = (m_stick.getRawAxis(ARM_AXIS)>0.5)?15.0:5.0;
+    if(m_driver.getRawButtonPressed(ARM_MODE_BTN)){
+      isArmEnabled = !isArmEnabled;
+    }
+    if (isArmEnabled){
+      setPoint = (m_driver.getRawAxis(ARM_AXIS)>0.5)?15.0:5.0;
+    } else {
+      double motorSpeed = 0.5*(m_driver.getRawAxis(ARM_AXIS));
+      m_armMotor.set(motorSpeed);
+    }
+    
 
     
-    //double motorSpeed = 0.4*(m_stick.getRawAxis(ARM_AXIS));
-    //m_motor.set(motorSpeed);
+    //double motorSpeed = 0.4*(m_driver.getRawAxis(ARM_AXIS));
+    //m_armMotor.set(motorSpeed);
     armMotionUpdate();
 
   }
@@ -230,11 +240,11 @@ public class Robot extends TimedRobot {
      * in the SPARK MAX to their factory default state. If no argument is passed, these
      * parameters will not persist between power cycles
      */
-    m_motor.restoreFactoryDefaults();
+    m_armMotor.restoreFactoryDefaults();
 
     // initialze PID controller and encoder objects
-    m_pidController = m_motor.getPIDController();
-    m_encoder = m_motor.getEncoder();
+    m_pidController = m_armMotor.getPIDController();
+    m_encoder = m_armMotor.getEncoder();
 
     // PID coefficients
     kP = 0.000125; 

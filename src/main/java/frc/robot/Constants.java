@@ -33,6 +33,7 @@
     public final static int YOSHI_BTN = 5;
     public final static int GRIPPER_BTN = 6;
     public final static int INVERT_BTN = 9;
+    public final static int ARM_MODE_BTN = 10;
 
     //Drivetrain Characteristics
     public final static double RAMP_TIME = 0.2; //seconds
