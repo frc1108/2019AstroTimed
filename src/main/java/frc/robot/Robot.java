@@ -83,6 +83,7 @@ public class Robot extends TimedRobot {
   private Solenoid boom = new Solenoid(BOOM_PCM_CH);
   private Solenoid front = new Solenoid(FRONT_PCM_CH);
   private Solenoid back = new Solenoid(BACK_PCM_CH);
+  private Solenoid hatch = new Solenoid(HATCH_PCM_CH);
 
   
   //init controls
@@ -162,11 +163,11 @@ public class Robot extends TimedRobot {
 
     //Intake actions
     double intakeSpeed = !m_intakeLoaded.get()?0:m_driver.getRawAxis(INTAKE_AXIS);
-    isOutakePressed = m_driver.getRawAxis(OUTTAKE_AXIS)>0.2;
+    /* isOutakePressed = m_driver.getRawAxis(OUTTAKE_AXIS)>0.2;
     if (isOutakePressed) {
 
     }
-    isOutakeReleased = !isOutakePressed;
+    isOutakeReleased = !isOutakePressed; */
     double outtakeSpeed = m_driver.getRawAxis(OUTTAKE_AXIS);
     intake.set(intakeSpeed-outtakeSpeed);
 
@@ -178,11 +179,13 @@ public class Robot extends TimedRobot {
     if(m_driver.getRawButtonPressed(YOSHI_BTN)){
       yoshi.set(!yoshi.get());
     }
-    
-    //
     //boom toggle
     if(m_driver.getRawButtonPressed(BOOM_BTN)){
       boom.set(!boom.get());
+    }
+     //hatch toggle
+     if(m_driver.getRawButtonPressed(HATCH_BTN)){
+      hatch.set(!hatch.get());
     }
 
     /* 
@@ -318,7 +321,7 @@ public class Robot extends TimedRobot {
     double currentTime = t.getFPGATimestamp();
     double elapsedTime = currentTime-climbStart;
     SmartDashboard.putNumber("elapsed time",elapsedTime);
-    boolean[] stepDone = new boolean[6];
+    boolean[] stepDone = new boolean[7];
     if(elapsedTime>0 && elapsedTime<1.5 && !stepDone[0]) {
       SmartDashboard.putString("Climb Step","Step Zero");
       stepDone[0]=!stepDone[0];

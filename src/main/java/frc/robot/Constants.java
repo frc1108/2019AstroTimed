@@ -30,6 +30,7 @@
 
     //Driver buttons
     public final static int BOOM_BTN = 1;
+    public final static int HATCH_BTN = 4;
     public final static int YOSHI_BTN = 5;
     public final static int GRIPPER_BTN = 6;
     public final static int CLIMB_MODE_BTN = 7;
@@ -50,7 +51,8 @@
     public final static int YOSHI_PCM_CH = 1;
     public final static int BOOM_PCM_CH = 2; 
     public final static int BACK_PCM_CH = 4;
-    public final static int FRONT_PCM_CH = 5; 
+    public final static int FRONT_PCM_CH = 5;
+    public final static int HATCH_PCM_CH = 6;
     
     //Intake
     public final static int INTAKE_PWM_CH = 0; //flipped output on one motor controller
