@@ -32,6 +32,7 @@
     public final static int BOOM_BTN = 1;
     public final static int YOSHI_BTN = 5;
     public final static int GRIPPER_BTN = 6;
+    public final static int CLIMB_MODE_BTN = 7;
     public final static int INVERT_BTN = 9;
     public final static int ARM_MODE_BTN = 10;
 
@@ -53,10 +54,10 @@
     
     //Intake
     public final static int INTAKE_PWM_CH = 0; //flipped output on one motor controller
-    public final static int INTAKE_DIO_CH = 0; //flipped output on one motor controller
+    public final static int INTAKE_DIO_CH = 9; //flipped output on one motor controller
 
     //Climber
-    public final static int CLIMB_PWM_CH = 1; //flipped output on one motor controller
+    public final static int CLIMB_PWM_CH = 3; //flipped output on one motor controller
 
 
 

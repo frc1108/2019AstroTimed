@@ -73,6 +73,8 @@ public class Robot extends TimedRobot {
 
   //init level 2
   private Spark levelClimber = new Spark(CLIMB_PWM_CH);
+  public boolean isClimbEnabled = false;
+  private double climbStart = 0;
 
   //init pneumatics
   private Compressor c = new Compressor(PCM_ID);
@@ -134,6 +136,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    teleopPeriodic();
     }
   
 
@@ -176,6 +179,7 @@ public class Robot extends TimedRobot {
       yoshi.set(!yoshi.get());
     }
     
+    //
     //boom toggle
     if(m_driver.getRawButtonPressed(BOOM_BTN)){
       boom.set(!boom.get());
@@ -203,6 +207,16 @@ public class Robot extends TimedRobot {
     } else {
       double motorSpeed = 0.5*(m_driver.getRawAxis(ARM_AXIS));
       m_armMotor.set(motorSpeed);
+    }
+
+    //climb movement
+    if(m_driver.getRawButtonPressed(CLIMB_MODE_BTN)){
+      isClimbEnabled = !isClimbEnabled;
+      climbStart = (climbStart==0)?t.getFPGATimestamp():climbStart;
+    }
+    SmartDashboard.putBoolean("Climb Mode", isClimbEnabled);
+    if (isClimbEnabled){
+      climbToTwo();
     }
     
 
@@ -298,6 +312,53 @@ public class Robot extends TimedRobot {
      m_pidController.setReference(setPoint, ControlType.kSmartMotion);
          
  
+  }
+
+  private void climbToTwo(){
+    double currentTime = t.getFPGATimestamp();
+    double elapsedTime = currentTime-climbStart;
+    SmartDashboard.putNumber("elapsed time",elapsedTime);
+    boolean[] stepDone = new boolean[6];
+    if(elapsedTime>0 && elapsedTime<1.5 && !stepDone[0]) {
+      SmartDashboard.putString("Climb Step","Step Zero");
+      stepDone[0]=!stepDone[0];
+      levelClimber.set(1);
+      front.set(true);
+    }
+    else if (elapsedTime>1.5 && elapsedTime<2.5 && !stepDone[1]){
+      SmartDashboard.putString("Climb Step","Step One");
+      stepDone[1]=!stepDone[1];
+      robotDrive.arcadeDrive(-0.65, 0);
+      front.set(false);
+      levelClimber.set(0);
+    }
+    else if (elapsedTime>2.5 && elapsedTime<4.5 && !stepDone[2]){
+      SmartDashboard.putString("Climb Step","Step Two");
+      stepDone[2]=!stepDone[2];
+      robotDrive.arcadeDrive(0, 0);
+      back.set(true);
+    }
+    else if (elapsedTime>4.5 && elapsedTime<5.3 && !stepDone[3]){
+      SmartDashboard.putString("Climb Step","Step Three");
+      stepDone[3]=!stepDone[3];
+      robotDrive.arcadeDrive(-0.65,0);
+    }
+    else if (elapsedTime>5.3 && elapsedTime<6 && !stepDone[4]){
+      SmartDashboard.putString("Climb Step","Step Four");
+      stepDone[4]=!stepDone[4];
+      robotDrive.arcadeDrive(0,0);
+      back.set(false);
+    }
+    else if (elapsedTime>6 && elapsedTime<6.6 && !stepDone[5]){
+      SmartDashboard.putString("Climb Step","Step Five");
+      stepDone[5]=!stepDone[5];
+      robotDrive.arcadeDrive(-0.5,0);
+    }
+    else if (elapsedTime>6.6 && !stepDone[6]){
+      SmartDashboard.putString("Climb Step","Step Six");
+      stepDone[6]=!stepDone[6];
+      robotDrive.arcadeDrive(0,0);
+    }
   }
 
 }
