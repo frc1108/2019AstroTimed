@@ -25,7 +25,7 @@
     public final static int SPEED_AXIS = 1;   //left vertical
     public final static int INTAKE_AXIS = 2;  //back left
     public final static int OUTTAKE_AXIS = 3; //back right
-    //public final static int ARM_AXIS_2 = 4; //right horizontal
+    public final static int ARM_AXIS_2 = 4; //right horizontal
     public final static int ARM_AXIS = 5;     //right vertical
 
     //Driver buttons
@@ -34,6 +34,7 @@
     public final static int YOSHI_BTN = 5;
     public final static int GRIPPER_BTN = 6;
     public final static int CLIMB_MODE_BTN = 7;
+    public final static int BACK_BTN = 8;
     public final static int INVERT_BTN = 9;
     public final static int ARM_MODE_BTN = 10;
 

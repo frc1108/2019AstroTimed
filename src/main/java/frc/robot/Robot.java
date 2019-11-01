@@ -37,6 +37,7 @@ import com.revrobotics.ControlType;
 import edu.wpi.first.cameraserver.CameraServer;
 import static frc.robot.Constants.*;
 
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -88,7 +89,6 @@ public class Robot extends TimedRobot {
   
   //init controls
   private Joystick m_driver = new Joystick(JOYSTICK_PORT);
-  private Joystick m_operator = new Joystick(OPERATOR_PORT);
 
 
   /**
@@ -101,6 +101,9 @@ public class Robot extends TimedRobot {
     armMotionConfig();
     CameraServer.getInstance().startAutomaticCapture();
     t.start();
+    SmartDashboard.putNumber("elapsed time",0);
+    SmartDashboard.putString("Climb Step","Inactive");
+
       
   }
   
@@ -187,6 +190,10 @@ public class Robot extends TimedRobot {
      if(m_driver.getRawButtonPressed(HATCH_BTN)){
       hatch.set(!hatch.get());
     }
+    //back toggle
+    if(m_driver.getRawButtonPressed(BACK_BTN)){
+      back.set(!back.get());
+    }
 
     /* 
     if(m_operator.getRawButtonPressed(YOSHI_BTN)){
@@ -205,8 +212,19 @@ public class Robot extends TimedRobot {
     }
     SmartDashboard.putBoolean("Arm Level Mode", isArmEnabled);
     if (isArmEnabled){
-      setPoint = (m_driver.getRawAxis(ARM_AXIS)>0.5)?15.0:5.0;
+      double armAxisValue = -m_driver.getRawAxis(ARM_AXIS);
+      if (armAxisValue<-0.5){
+        setPoint = 15.0;
+      }
+      else if (armAxisValue>0.5){
+        setPoint = 25.0;
+      }
+      else{
+        setPoint = 5.0;
+      }
+      SmartDashboard.putNumber("set point",setPoint);
       armMotionUpdate();
+      SmartDashboard.putNumber("process var",m_encoder.getPosition());
     } else {
       double motorSpeed = 0.5*(m_driver.getRawAxis(ARM_AXIS));
       m_armMotor.set(motorSpeed);
@@ -262,20 +280,20 @@ public class Robot extends TimedRobot {
     m_encoder = m_armMotor.getEncoder();
 
     // PID coefficients
-    kP = 0.000125; 
+    kP = 0.000125; //0.000125
     kI = 0;
-    kD = 0.0000625; 
+    kD = 0.001; //0.000625 --2
     kIz = 0; 
-    kFF = 0.0015; 
+    kFF = 0.001; //0.0015
     kMaxOutput = 1; 
     kMinOutput = -1;
     kZeroPosition = 0;
-    allowedErr = 0.001;
+    allowedErr = 0.2; //.001
     maxRPM = 5700;
 
     // Smart Motion Coefficients
-    maxVel = 3000; // rpm default 2000:1500
-    maxAcc = 2000;
+    maxVel = 2000; // rpm default 2000:1500
+    maxAcc = 1500;
 
     // set PID coefficients
     m_pidController.setP(kP);
@@ -352,12 +370,12 @@ public class Robot extends TimedRobot {
       robotDrive.arcadeDrive(0,0);
       back.set(false);
     }
-    else if (elapsedTime>6 && elapsedTime<6.6 && !stepDone[5]){
+    else if (elapsedTime>6 && elapsedTime<6.7 && !stepDone[5]){
       SmartDashboard.putString("Climb Step","Step Five");
       stepDone[5]=!stepDone[5];
       robotDrive.arcadeDrive(-0.5,0);
     }
-    else if (elapsedTime>6.6 && !stepDone[6]){
+    else if (elapsedTime>6.7 && elapsedTime<8 && !stepDone[6]){
       SmartDashboard.putString("Climb Step","Step Six");
       stepDone[6]=!stepDone[6];
       robotDrive.arcadeDrive(0,0);
