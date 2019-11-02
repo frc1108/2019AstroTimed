@@ -88,7 +88,8 @@ public class Robot extends TimedRobot {
 
   
   //init controls
-  private Joystick m_driver = new Joystick(JOYSTICK_PORT);
+  private Joystick m_driver = new Joystick(DRIVER_PORT);
+  private Joystick m_operator = new Joystick(OPERATOR_PORT);
 
 
   /**
@@ -165,33 +166,33 @@ public class Robot extends TimedRobot {
 
 
     //Intake actions
-    double intakeSpeed = !m_intakeLoaded.get()?0:m_driver.getRawAxis(INTAKE_AXIS);
-    /* isOutakePressed = m_driver.getRawAxis(OUTTAKE_AXIS)>0.2;
+    double intakeSpeed = !m_intakeLoaded.get()?0:m_operator.getRawAxis(INTAKE_AXIS);
+    /* isOutakePressed = m_operator.getRawAxis(OUTTAKE_AXIS)>0.2;
     if (isOutakePressed) {
 
     }
     isOutakeReleased = !isOutakePressed; */
-    double outtakeSpeed = m_driver.getRawAxis(OUTTAKE_AXIS);
+    double outtakeSpeed = m_operator.getRawAxis(OUTTAKE_AXIS);
     intake.set(intakeSpeed-outtakeSpeed);
 
 
     
     //gripper release cargo when pressed
-    gripper.set(m_driver.getRawButton(GRIPPER_BTN));
+    gripper.set(m_operator.getRawButton(GRIPPER_BTN));
     //yoshi toggle
-    if(m_driver.getRawButtonPressed(YOSHI_BTN)){
+    if(m_operator.getRawButtonPressed(YOSHI_BTN)){
       yoshi.set(!yoshi.get());
     }
     //boom toggle
-    if(m_driver.getRawButtonPressed(BOOM_BTN)){
+    if(m_operator.getRawButtonPressed(BOOM_BTN)){
       boom.set(!boom.get());
     }
      //hatch toggle
-     if(m_driver.getRawButtonPressed(HATCH_BTN)){
+     if(m_operator.getRawButtonPressed(HATCH_BTN)){
       hatch.set(!hatch.get());
     }
     //back toggle
-    if(m_driver.getRawButtonPressed(BACK_BTN)){
+    if(m_operator.getRawButtonPressed(BACK_BTN)){
       back.set(!back.get());
     }
 
@@ -207,12 +208,12 @@ public class Robot extends TimedRobot {
     } */
     
     //arm movement
-    if(m_driver.getRawButtonPressed(ARM_MODE_BTN)){
+    if(m_operator.getRawButtonPressed(ARM_MODE_BTN)){
       isArmEnabled = !isArmEnabled;
     }
     SmartDashboard.putBoolean("Arm Level Mode", isArmEnabled);
     if (isArmEnabled){
-      double armAxisValue = -m_driver.getRawAxis(ARM_AXIS);
+      double armAxisValue = -m_operator.getRawAxis(ARM_AXIS);
       if (armAxisValue<-0.5){
         setPoint = 15.0;
       }
@@ -226,12 +227,12 @@ public class Robot extends TimedRobot {
       armMotionUpdate();
       SmartDashboard.putNumber("process var",m_encoder.getPosition());
     } else {
-      double motorSpeed = 0.5*(m_driver.getRawAxis(ARM_AXIS));
+      double motorSpeed = 0.5*(m_operator.getRawAxis(ARM_AXIS));
       m_armMotor.set(motorSpeed);
     }
 
     //climb movement
-    if(m_driver.getRawButtonPressed(CLIMB_MODE_BTN)){
+    if(m_operator.getRawButtonPressed(CLIMB_MODE_BTN)){
       isClimbEnabled = !isClimbEnabled;
       climbStart = (climbStart==0)?t.getFPGATimestamp():climbStart;
     }

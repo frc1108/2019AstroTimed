@@ -17,8 +17,8 @@
     public final static int ARM_MOTOR_SPARK_CONTROLLER_ID = 1;
     
     //OI Joysticks
-    public final static int JOYSTICK_PORT = 0;
     public final static int OPERATOR_PORT = 1;
+    public final static int DRIVER_PORT = 0;
 
     //Driver Axis
     public final static int TURN_AXIS = 0;    //left horizontal
