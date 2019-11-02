@@ -232,7 +232,7 @@ public class Robot extends TimedRobot {
     }
 
     //climb movement
-    if(m_operator.getRawButtonPressed(CLIMB_MODE_BTN)){
+    if(m_driver.getRawButtonPressed(CLIMB_MODE_BTN)){
       isClimbEnabled = !isClimbEnabled;
       climbStart = (climbStart==0)?t.getFPGATimestamp():climbStart;
     }
