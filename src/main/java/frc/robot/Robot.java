@@ -340,42 +340,42 @@ public class Robot extends TimedRobot {
     double elapsedTime = currentTime-climbStart;
     SmartDashboard.putNumber("elapsed time",elapsedTime);
     boolean[] stepDone = new boolean[7];
-    if(elapsedTime>0 && elapsedTime<1.5 && !stepDone[0]) {
+    if(elapsedTime>0 && elapsedTime<1.8 && !stepDone[0]) {
       SmartDashboard.putString("Climb Step","Step Zero");
       stepDone[0]=!stepDone[0];
       levelClimber.set(1);
       front.set(true);
     }
-    else if (elapsedTime>1.5 && elapsedTime<2.5 && !stepDone[1]){
+    else if (elapsedTime>1.8 && elapsedTime<2.8 && !stepDone[1]){
       SmartDashboard.putString("Climb Step","Step One");
       stepDone[1]=!stepDone[1];
       robotDrive.arcadeDrive(-0.65, 0);
       front.set(false);
       levelClimber.set(0);
     }
-    else if (elapsedTime>2.5 && elapsedTime<4.5 && !stepDone[2]){
+    else if (elapsedTime>2.8 && elapsedTime<4.8 && !stepDone[2]){
       SmartDashboard.putString("Climb Step","Step Two");
       stepDone[2]=!stepDone[2];
       robotDrive.arcadeDrive(0, 0);
       back.set(true);
     }
-    else if (elapsedTime>4.5 && elapsedTime<5.3 && !stepDone[3]){
+    else if (elapsedTime>4.8 && elapsedTime<5.6 && !stepDone[3]){
       SmartDashboard.putString("Climb Step","Step Three");
       stepDone[3]=!stepDone[3];
       robotDrive.arcadeDrive(-0.65,0);
     }
-    else if (elapsedTime>5.3 && elapsedTime<6 && !stepDone[4]){
+    else if (elapsedTime>5.6 && elapsedTime<6.3 && !stepDone[4]){
       SmartDashboard.putString("Climb Step","Step Four");
       stepDone[4]=!stepDone[4];
       robotDrive.arcadeDrive(0,0);
       back.set(false);
     }
-    else if (elapsedTime>6 && elapsedTime<6.7 && !stepDone[5]){
+    else if (elapsedTime>6.3 && elapsedTime<7 && !stepDone[5]){
       SmartDashboard.putString("Climb Step","Step Five");
       stepDone[5]=!stepDone[5];
       robotDrive.arcadeDrive(-0.5,0);
     }
-    else if (elapsedTime>6.7 && elapsedTime<8 && !stepDone[6]){
+    else if (elapsedTime>7 && elapsedTime<8 && !stepDone[6]){
       SmartDashboard.putString("Climb Step","Step Six");
       stepDone[6]=!stepDone[6];
       robotDrive.arcadeDrive(0,0);
