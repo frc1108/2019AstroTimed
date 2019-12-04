@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 //ctre imports
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 //rev imports
@@ -100,12 +101,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     driveConfig();
     armMotionConfig();
-    CameraServer.getInstance().startAutomaticCapture();
-    t.start();
-    SmartDashboard.putNumber("elapsed time",0);
-    SmartDashboard.putString("Climb Step","Inactive");
-
-      
+    CameraServer.getInstance().startAutomaticCapture();      
   }
   
   /**
@@ -157,8 +153,10 @@ public class Robot extends TimedRobot {
     }
     SmartDashboard.putBoolean("Drive Inverted", isInvertedDrive);
     double _speed = (isInvertedDrive?1:-1)*m_driver.getRawAxis(SPEED_AXIS)*SPEED_MAX;
-    double _turn = m_driver.getRawAxis(TURN_AXIS)*TURN_MAX;
-    robotDrive.arcadeDrive(_speed, _turn);
+    boolean isQuickTurn = m_driver.getRawButton(QUICK_TURN_BTN);
+    boolean isStaticTurn = (Math.abs(_speed)<2*DRIVER_JOY_DEADBAND);
+    double _turn = m_driver.getRawAxis(TURN_AXIS)*TURN_MAX*(isStaticTurn&&!isQuickTurn?0.5:1)*(isQuickTurn?0.75:1);
+    robotDrive.curvatureDrive(_speed, _turn,isStaticTurn||isQuickTurn);
     
 
     //Intake sensor
@@ -192,20 +190,13 @@ public class Robot extends TimedRobot {
       hatch.set(!hatch.get());
     }
     //back toggle
-    if(m_operator.getRawButtonPressed(BACK_BTN)){
+    if(m_driver.getRawButtonPressed(BACK_BTN)){
       back.set(!back.get());
     }
-
-    /* 
-    if(m_operator.getRawButtonPressed(YOSHI_BTN)){
+     //front toggle
+     if(m_driver.getRawButtonPressed(FRONT_BTN)){
       front.set(!front.get());
-      levelClimber.set((levelClimber.get()>0.5)?0:1);
     }
-    if(m_operator.getRawButtonPressed(YOSHI_BTN)){
-      front.set(false);
-      levelClimber.set(0);
-      back.set(!back.get());
-    } */
     
     //arm movement
     if(m_operator.getRawButtonPressed(ARM_MODE_BTN)){
@@ -232,14 +223,14 @@ public class Robot extends TimedRobot {
     }
 
     //climb movement
-    if(m_driver.getRawButtonPressed(CLIMB_MODE_BTN)){
+    /* if(m_driver.getRawButtonPressed(CLIMB_MODE_BTN)){
       isClimbEnabled = !isClimbEnabled;
       climbStart = (climbStart==0)?t.getFPGATimestamp():climbStart;
     }
     SmartDashboard.putBoolean("Climb Mode", isClimbEnabled);
     if (isClimbEnabled){
       climbToTwo();
-    }
+    } */
     
 
   }
@@ -255,16 +246,22 @@ public class Robot extends TimedRobot {
    * Setup of drive motor controllers
    */
   public void driveConfig(){
+    robotDrive.setDeadband(DRIVER_JOY_DEADBAND);
     //CTRE Config
     leftFront.configFactoryDefault(0);
     leftFront.configOpenloopRamp(RAMP_TIME);
+    leftFront.setNeutralMode(NeutralMode.Brake);
     leftBack.configFactoryDefault(0);
     leftBack.configOpenloopRamp(RAMP_TIME);
+    leftBack.setNeutralMode(NeutralMode.Brake);
     rightFront.configFactoryDefault(0);
     rightFront.configOpenloopRamp(RAMP_TIME);
+    rightFront.setNeutralMode(NeutralMode.Brake);
     leftBack.configFactoryDefault(0);
     leftBack.configOpenloopRamp(RAMP_TIME);
+    rightBack.setNeutralMode(NeutralMode.Brake);
   }
+
 /**
  * Setup smart motion of arm SparkMax 
  */
@@ -294,7 +291,7 @@ public class Robot extends TimedRobot {
 
     // Smart Motion Coefficients
     maxVel = 2000; // rpm default 2000:1500
-    maxAcc = 1500;
+    maxAcc = 1000;
 
     // set PID coefficients
     m_pidController.setP(kP);
@@ -326,62 +323,11 @@ public class Robot extends TimedRobot {
   }
 
   private void armMotionUpdate(){
-     /**
+    /**
       * As with other PID modes, Smart Motion is set by calling the
       * setReference method on an existing pid object and setting
       * the control type to kSmartMotion
       */
-     m_pidController.setReference(setPoint, ControlType.kSmartMotion);
-         
- 
-  }
-
-  private void climbToTwo(){
-    double currentTime = t.getFPGATimestamp();
-    double elapsedTime = currentTime-climbStart;
-    SmartDashboard.putNumber("elapsed time",elapsedTime);
-    boolean[] stepDone = new boolean[7];
-    if(elapsedTime>0 && elapsedTime<1.8 && !stepDone[0]) {
-      SmartDashboard.putString("Climb Step","Step Zero");
-      stepDone[0]=!stepDone[0];
-      levelClimber.set(1);
-      front.set(true);
-    }
-    else if (elapsedTime>1.8 && elapsedTime<2.8 && !stepDone[1]){
-      SmartDashboard.putString("Climb Step","Step One");
-      stepDone[1]=!stepDone[1];
-      robotDrive.arcadeDrive(-0.65, 0);
-      front.set(false);
-      levelClimber.set(0);
-    }
-    else if (elapsedTime>2.8 && elapsedTime<4.8 && !stepDone[2]){
-      SmartDashboard.putString("Climb Step","Step Two");
-      stepDone[2]=!stepDone[2];
-      robotDrive.arcadeDrive(0, 0);
-      back.set(true);
-    }
-    else if (elapsedTime>4.8 && elapsedTime<5.6 && !stepDone[3]){
-      SmartDashboard.putString("Climb Step","Step Three");
-      stepDone[3]=!stepDone[3];
-      robotDrive.arcadeDrive(-0.65,0);
-    }
-    else if (elapsedTime>5.6 && elapsedTime<6.3 && !stepDone[4]){
-      SmartDashboard.putString("Climb Step","Step Four");
-      stepDone[4]=!stepDone[4];
-      robotDrive.arcadeDrive(0,0);
-      back.set(false);
-    }
-    else if (elapsedTime>6.3 && elapsedTime<7 && !stepDone[5]){
-      SmartDashboard.putString("Climb Step","Step Five");
-      stepDone[5]=!stepDone[5];
-      robotDrive.arcadeDrive(-0.5,0);
-    }
-    else if (elapsedTime>7 && elapsedTime<8 && !stepDone[6]){
-      SmartDashboard.putString("Climb Step","Step Six");
-      stepDone[6]=!stepDone[6];
-      robotDrive.arcadeDrive(0,0);
-    }
-  }
-
+      m_pidController.setReference(setPoint, ControlType.kSmartMotion);
+  } 
 }
-

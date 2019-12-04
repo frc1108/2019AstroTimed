@@ -33,15 +33,19 @@
     public final static int HATCH_BTN = 4;
     public final static int YOSHI_BTN = 5;
     public final static int GRIPPER_BTN = 6;
-    public final static int CLIMB_MODE_BTN = 7;
+    public final static int FRONT_BTN = 7;
     public final static int BACK_BTN = 8;
+    public final static int QUICK_TURN_BTN = 6;
     public final static int INVERT_BTN = 9;
     public final static int ARM_MODE_BTN = 10;
 
     //Drivetrain Characteristics
-    public final static double RAMP_TIME = 0.15; //seconds
+    public final static double RAMP_TIME = 0.2;
+    public final static double DRIVER_JOY_DEADBAND = 0.075;
+
+    //seconds
     public final static double SPEED_MAX = 1;
-    public final static double TURN_MAX = 1;
+    public final static double TURN_MAX = 0.9;
     
 
     //PCM IDs
